@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 2 · Agent Core | Школа AI-агентов | Ник Сынов</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #080b14; }
+
+        .hero-bg {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 60%, #24243e 100%);
+        }
+        .card-bg {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: border-color 0.2s;
+        }
+        .card-bg:hover { border-color: rgba(99,102,241,0.35); }
+        .quote-style {
+            background: linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(139,92,246,0.12) 100%);
+            border-left: 4px solid #818cf8;
+        }
+        .hw-style {
+            background: linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(5,150,105,0.08) 100%);
+            border: 1px solid rgba(16,185,129,0.25);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #818cf8 0%, #a78bfa 50%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .badge-purple { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); }
+        .badge-green  { background: rgba(16,185,129,0.2);  color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+        .badge-red    { background: rgba(239,68,68,0.15);   color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+        .badge-blue   { background: rgba(59,130,246,0.15);  color: #93c5fd; border: 1px solid rgba(59,130,246,0.25); }
+        .badge-yellow { background: rgba(234,179,8,0.15);   color: #fde047; border: 1px solid rgba(234,179,8,0.25); }
+
+        .section-title::after {
+            content: ''; display: block;
+            width: 48px; height: 3px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            margin-top: 8px; border-radius: 99px;
+        }
+        .number-badge {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            width: 30px; height: 30px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 13px; flex-shrink: 0;
+        }
+        @keyframes pulse-glow {
+            0%,100% { box-shadow: 0 0 18px rgba(99,102,241,0.25); }
+            50%      { box-shadow: 0 0 36px rgba(139,92,246,0.45); }
+        }
+        .animate-glow { animation: pulse-glow 3.5s ease-in-out infinite; }
+
+        .tab-btn {
+            padding: 8px 18px; border-radius: 10px;
+            font-size: 13px; font-weight: 600;
+            transition: all 0.2s; cursor: pointer;
+            border: 1px solid transparent;
+            display: inline-block; text-decoration: none;
+        }
+        .tab-active { background: linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; }
+        .tab-link {
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.65);
+            border-color: rgba(255,255,255,0.10);
+        }
+        .tab-link:hover { border-color: rgba(99,102,241,0.5); color: #fff; }
+        .tab-inactive {
+            background: rgba(255,255,255,0.04);
+            color: rgba(255,255,255,0.25);
+            border-color: rgba(255,255,255,0.08);
+            cursor: not-allowed;
+        }
+        .cost-good { background: rgba(16,185,129,0.10); border:1px solid rgba(16,185,129,0.25); }
+        .cost-bad  { background: rgba(239,68,68,0.10);  border:1px solid rgba(239,68,68,0.25);  }
+
+        /* scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #0d1018; }
+        ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 99px; }
+    </style>
+</head>
+<body class="text-white min-h-screen">
+
+<!-- ─── HEADER ─────────────────────────────────────────────────────────── -->
+<header class="hero-bg border-b border-white/10">
+    <div class="max-w-5xl mx-auto px-6 py-10">
+
+        <!-- brand -->
+        <div class="flex items-center gap-3 mb-7">
+            <div class="badge-purple w-8 h-8 rounded-xl flex items-center justify-center text-xs font-extrabold">AI</div>
+            <span class="text-white/50 text-xs font-semibold tracking-widest uppercase">Школа AI-агентов · Ник Сынов</span>
+        </div>
+
+        <!-- tabs -->
+        <div class="flex gap-2 flex-wrap mb-10">
+            <a href="index.html" class="tab-btn tab-link">Урок 1 · Основы</a>
+            <span class="tab-btn tab-active">Урок 2 · Agent Core</span>
+            <span class="tab-btn tab-inactive">Урок 3 · скоро</span>
+            <span class="tab-btn tab-inactive">Урок 4 · скоро</span>
+            <span class="tab-btn tab-inactive">Урок 5–8 · скоро</span>
+        </div>
+
+        <!-- hero -->
+        <div class="flex items-start gap-5">
+            <div class="animate-glow card-bg rounded-2xl px-5 py-4 flex-shrink-0">
+                <div class="text-5xl font-black text-white/15 leading-none">02</div>
+            </div>
+            <div>
+                <div class="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-2">Урок 2 · Agent Core · 10 июля 2026</div>
+                <h1 class="text-3xl md:text-4xl font-black leading-tight mb-3">
+                    Ядро агента:<br>
+                    <span class="gradient-text">state machine, Гермес<br>и защита от галлюцинаций</span>
+                </h1>
+                <p class="text-white/45 text-sm leading-relaxed max-w-xl mb-4">
+                    Почему половина агентских проектов проваливается даже у гигантов — и как строить
+                    систему, которая работает: разбивка SOP на стейты, обвязка Гермес, математический
+                    подбор промтов (DSPY), трейсинг ошибок и метод чёрного ящика 80/20.
+                </p>
+                <a href="https://youtu.be/uwuhytjfGm8" target="_blank" rel="noopener"
+                   class="inline-flex items-center gap-2 bg-red-500/15 border border-red-500/30 hover:border-red-400/60 transition-colors rounded-xl px-4 py-2 text-xs font-bold text-red-300">
+                    ▶ Смотреть запись урока · 1 ч 35 мин
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ─── MAIN ───────────────────────────────────────────────────────────── -->
+<main class="max-w-5xl mx-auto px-6 py-14">
+
+    <!-- Stats row -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+        <div class="card-bg rounded-2xl p-5 text-center">
+            <div class="text-2xl font-black text-indigo-400 mb-1">~95 мин</div>
+            <div class="text-xs text-white/35">Длительность</div>
+        </div>
+        <div class="card-bg rounded-2xl p-5 text-center">
+            <div class="text-2xl font-black text-red-400 mb-1">50%</div>
+            <div class="text-xs text-white/35">Агентских проектов проваливается</div>
+        </div>
+        <div class="card-bg rounded-2xl p-5 text-center">
+            <div class="text-2xl font-black text-indigo-400 mb-1">5 стейтов</div>
+            <div class="text-xs text-white/35">Оптимальная разбивка SOP</div>
+        </div>
+        <div class="card-bg rounded-2xl p-5 text-center">
+            <div class="text-2xl font-black text-indigo-400 mb-1">80 / 20</div>
+            <div class="text-xs text-white/35">Готовое / своё уникальное</div>
+        </div>
+    </div>
+
+    <!-- ── KEY INSIGHTS ── -->
+    <section class="mb-16">
+        <h2 class="text-xl font-bold mb-1 section-title">Ключевые инсайты</h2>
+        <p class="text-white/35 text-sm mb-8 mt-3">Самое важное из урока — одной строкой</p>
+
+        <div class="grid md:grid-cols-2 gap-4">
+
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex gap-3 items-start">
+                    <span class="text-2xl">🧩</span>
+                    <div>
+                        <div class="text-xs font-bold text-indigo-400 uppercase mb-2">Главное правило</div>
+                        <p class="text-white font-semibold text-sm leading-relaxed">Превратить SOP в workflow — это не «подключить интеграции». Это правильно разбить процесс на стейты: ~5 экспертных этапов с входом и выходом.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex gap-3 items-start">
+                    <span class="text-2xl">📉</span>
+                    <div>
+                        <div class="text-xs font-bold text-red-400 uppercase mb-2">Реальность рынка</div>
+                        <p class="text-white font-semibold text-sm leading-relaxed">~50% проектов внедрения агентов проваливаются — даже у корпораций уровня Tata и Accenture. Причина не в моделях, а в плохой инженерии систем.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex gap-3 items-start">
+                    <span class="text-2xl">🎯</span>
+                    <div>
+                        <div class="text-xs font-bold text-yellow-400 uppercase mb-2">Экспертный SOP</div>
+                        <p class="text-white font-semibold text-sm leading-relaxed">Пиши SOP как для эксперта, а не для джуна. Anthropic подтвердили: дашь джуновский SOP «нажми кнопочку» — агент и будет работать как джун.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex gap-3 items-start">
+                    <span class="text-2xl">🤖</span>
+                    <div>
+                        <div class="text-xs font-bold text-purple-400 uppercase mb-2">Ядро системы</div>
+                        <p class="text-white font-semibold text-sm leading-relaxed">Гермес — обвязка с субагентами, скилами и тремя слоями памяти. Сам дробит большие задачи, чтобы не переполнять контекст.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex gap-3 items-start">
+                    <span class="text-2xl">🧮</span>
+                    <div>
+                        <div class="text-xs font-bold text-blue-400 uppercase mb-2">Математика вместо гаданий</div>
+                        <p class="text-white font-semibold text-sm leading-relaxed">DSPY тестирует ~100 вариантов промта на входе-выходе и сам подбирает, какой вариант скила лучше работает под конкретную задачу.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex gap-3 items-start">
+                    <span class="text-2xl">👤</span>
+                    <div>
+                        <div class="text-xs font-bold text-green-400 uppercase mb-2">Guardrails</div>
+                        <p class="text-white font-semibold text-sm leading-relaxed">Ни одна система не работает полностью без человека. Критические решения архитектурно обязаны приходить к тебе на подтверждение.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ── QUOTES ── -->
+    <section class="mb-16">
+        <h2 class="text-xl font-bold mb-1 section-title">Цитаты урока</h2>
+        <p class="text-white/35 text-sm mb-8 mt-3">Слова, которые стоит запомнить</p>
+
+        <div class="space-y-4">
+
+            <div class="quote-style rounded-2xl p-6">
+                <p class="text-base md:text-lg font-semibold text-white/90 leading-relaxed mb-3">
+                    «Цель — не сократить количество людей, а стократно умножить то, что может один человек в команде»
+                </p>
+                <div class="text-xs text-indigo-300 font-medium">— зачем всё это: специалист с 10 агентами стоит ×5</div>
+            </div>
+
+            <div class="quote-style rounded-2xl p-6">
+                <p class="text-base md:text-lg font-semibold text-white/90 leading-relaxed mb-3">
+                    «Половина проектов по реализации агентских систем сейчас провальны. И я говорю не про домашних инженеров, а про очень серьёзные компании с очень серьёзными подходами»
+                </p>
+                <div class="text-xs text-indigo-300 font-medium">— о статистике рынка внедрений</div>
+            </div>
+
+            <div class="quote-style rounded-2xl p-6">
+                <p class="text-base md:text-lg font-semibold text-white/90 leading-relaxed mb-3">
+                    «Мы классно развиваем сам AI, но скорость понимания, как строить из него системы — на ужасном уровне. Это признают даже самые передовые инженеры»
+                </p>
+                <div class="text-xs text-indigo-300 font-medium">— почему инженерия систем важнее выбора модели</div>
+            </div>
+
+            <div class="quote-style rounded-2xl p-6">
+                <p class="text-base md:text-lg font-semibold text-white/90 leading-relaxed mb-3">
+                    «Если вы описываете задачу как для тупого — оно и сделает как тупой. Не пишите "не рисуй слона" — оно нарисует слона»
+                </p>
+                <div class="text-xs text-indigo-300 font-medium">— об экспертном уровне постановки задач</div>
+            </div>
+
+            <div class="quote-style rounded-2xl p-6">
+                <p class="text-base md:text-lg font-semibold text-white/90 leading-relaxed mb-3">
+                    «Чаще всего мы, управленцы и собственники, и есть самая большая проблема — узкая точка нашего бизнеса. Двигаемся на уверенности, а не на экспертизе»
+                </p>
+                <div class="text-xs text-indigo-300 font-medium">— о том, кого первым убирать из процессов</div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ── CONCEPTS ── -->
+    <section class="mb-16">
+        <h2 class="text-xl font-bold mb-1 section-title">Разбор концепций</h2>
+        <p class="text-white/35 text-sm mb-8 mt-3">Что обсуждалось на уроке</p>
+
+        <div class="space-y-5">
+
+            <!-- 1 -->
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="number-badge text-white mt-0.5">1</div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-white mb-2">Почему 50% агентских проектов проваливаются</h3>
+                        <p class="text-white/55 text-sm leading-relaxed mb-3">
+                            Код давно не проблема: Anthropic признают, что последние модели написаны с помощью агентов
+                            лучше, чем написали бы люди. Проваливаются <strong class="text-indigo-300">системы</strong>:
+                            большинство пишет промты, собирает из них скилы, запускает — «и авось заработает». Не работает.
+                            Вторая ловушка — overkill: сложные кастомные конструкции, которые через месяц устаревают с
+                            выходом новой модели. Принцип KISS (Keep It Simple, Stupid) сейчас актуален как никогда.
+                        </p>
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-semibold badge-red">❌ Промты + запуск = провал</span>
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-semibold badge-red">❌ Overkill-архитектуры</span>
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-semibold badge-green">✅ Простые системы + инженерия</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2 -->
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="number-badge text-white mt-0.5">2</div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-white mb-2">Анатомия Гермеса: из чего состоит агент</h3>
+                        <p class="text-white/55 text-sm leading-relaxed mb-3">
+                            Гермес (Hermes) — обвязка-harness, эволюция простого Ральфа: та же цикличность, но с субагентами
+                            и защитой от галлюцинаций. Внутри: <strong class="text-indigo-300">несколько LLM</strong> под разные
+                            задачи (локальная — для простого, мощная — для критического), <strong class="text-indigo-300">soul-файл</strong> —
+                            «психология» агента под тип задач (креатив / аналитика), <strong class="text-indigo-300">скилы</strong> —
+                            что он умеет, и <strong class="text-indigo-300">tools</strong> — чёткие алгоритмы без LLM.
+                            Правило: агент нужен только там, где надо думать. Где есть точный алгоритм «пойди туда, возьми это» —
+                            это tool, иначе сожжёшь горы токенов.
+                        </p>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3 text-center">
+                                <div class="text-sm font-bold text-indigo-300 mb-1">📚</div>
+                                <div class="text-xs font-semibold text-white/70">Память 1: RAG</div>
+                                <div class="text-xs text-white/35 mt-0.5">Загруженные знания рынка</div>
+                            </div>
+                            <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3 text-center">
+                                <div class="text-sm font-bold text-indigo-300 mb-1">⚡</div>
+                                <div class="text-xs font-semibold text-white/70">Память 2: контекст</div>
+                                <div class="text-xs text-white/35 mt-0.5">Текущая задача, обнуляется</div>
+                            </div>
+                            <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3 text-center">
+                                <div class="text-sm font-bold text-indigo-300 mb-1">🗄️</div>
+                                <div class="text-xs font-semibold text-white/70">Память 3: долгосрочная</div>
+                                <div class="text-xs text-white/35 mt-0.5">Опыт проекта за недели</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3 -->
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="number-badge text-white mt-0.5">3</div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-white mb-2">State machine — золотой эталон превращения SOP в workflow</h3>
+                        <p class="text-white/55 text-sm leading-relaxed mb-3">
+                            Не расписывай процесс до «нажми кнопочку» — это джуновский SOP, и агент будет исполнять его тупо.
+                            Разбей процесс на <strong class="text-indigo-300">~5 ключевых состояний (стейтов)</strong>:
+                            «собрать данные из точки А → проанализировать так-то → склеить с прошлыми и сравнить →
+                            при критической ситуации прийти к человеку с готовым решением». Для каждого стейта — свой скилл
+                            и даже своя «личность» агента. Представь, что это 5 идеальных экспертов, каждый для своего этапа.
+                            Гермес внутри стейтов сам дораздробит работу на субагентов — это его чёрный ящик, не мешай.
+                        </p>
+                        <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3">
+                            <p class="text-xs text-indigo-300">💡 Формула стейта: вход → что делает → выход (ценный конечный продукт этапа). Не «какие кнопки нажимать», а «какой эксперт что отдаёт следующему».</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4 -->
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="number-badge text-white mt-0.5">4</div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-white mb-2">DSPY — математический подбор промтов</h3>
+                        <p class="text-white/55 text-sm leading-relaxed mb-3">
+                            То, что OpenAI сделала со всем миром (миллионы людей бесплатно дают фидбэк модели), DSPY делает
+                            внутри твоей задачи. Система генерирует ~100 вариантов промта, прогоняет их на данных вход→выход,
+                            оценивает эффективность каждого и <strong class="text-indigo-300">сохраняет матрицу</strong>:
+                            «для такого входа лучше работает такой вариант скила». Скилы перестают быть статичным текстом —
+                            под каждую задачу автоматически подбирается вариант, который математически доказал, что работает лучше.
+                        </p>
+                        <div class="bg-purple-500/10 border border-purple-500/20 rounded-xl p-3">
+                            <p class="text-xs text-purple-300">⚠️ Иногда агент работает лучше, если ему НЕ писать «реклама должна окупаться 2:1». Угадать это нельзя — только протестировать математически. Ещё и от модели зависит.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5 -->
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="number-badge text-white mt-0.5">5</div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-white mb-2">Трейсинг + Evaluation: находим источник галлюцинаций</h3>
+                        <p class="text-white/55 text-sm leading-relaxed mb-3">
+                            Иерархия: workflow → стейты → субагенты → экшены. Каждый экшен записывается с ID и своим
+                            входом-выходом. Ошибся агент — трейсишь вниз и находишь, <strong class="text-indigo-300">какой конкретно
+                            экшен</strong> дал сбой (как с продажником: не «клиенты не покупают», а конкретная ошибка в конкретном
+                            звонке). Проблема Гермеса «из коробки»: он умеет создавать новые скилы, но не улучшать старые — множит
+                            сущности. Поэтому сверху ставится система, которая скилы <strong class="text-indigo-300">не добавляет,
+                            а улучшает</strong> на основе оценок экшенов. Так система эволюционирует, а не разрастается.
+                        </p>
+                        <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3">
+                            <p class="text-xs text-blue-300">💡 Где фидбэк-цикл долгий (результат рекламы виден через недели) — точкой оценки становится человек или отдельный агент-оценщик с базой знаний, плюс промежуточные метрики-предикторы.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6 -->
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="number-badge text-white mt-0.5">6</div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-white mb-2">Метод чёрного ящика 80/20 + агенты-хелперы</h3>
+                        <p class="text-white/55 text-sm leading-relaxed mb-3">
+                            80% процесса реализуй готовыми, проверенными рынком скилами (лучшие практики от лучших людей мира,
+                            а не от местного агентства), 20% — твоя уникальность и интеллектуальная собственность.
+                            Ник даёт участникам агентов-хелперов в Genspark: <strong class="text-indigo-300">конвертер SOP</strong>
+                            (превращает твой абстрактный SOP в экспертный формат для агента), <strong class="text-indigo-300">скаут</strong>
+                            (по твоему SOP находит готовые протестированные скилы с хорошим фидбэком), <strong class="text-indigo-300">дизайнер
+                            стейтов</strong> (проектирует всю схему процесса) и <strong class="text-indigo-300">сборщик данных</strong>
+                            (структурирует PDF, таблицы, видео в нормальную базу — подход OAG).
+                        </p>
+                        <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3">
+                            <p class="text-xs text-blue-300">💡 Скаут ищет не «скилл со скриншота из инстаграма», а готовое решение под твой конкретный SOP — протестированное большим комьюнити. Надёжность важнее экспериментов.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ── TEAM LEVELS ── -->
+    <section class="mb-16">
+        <h2 class="text-xl font-bold mb-1 section-title">Команда: три уровня работы с агентами</h2>
+        <p class="text-white/35 text-sm mb-8 mt-3">Как это устроено в компании Ника</p>
+
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
+            <div class="card-bg rounded-2xl p-6">
+                <div class="text-2xl mb-3">💬</div>
+                <div class="text-sm font-bold text-white mb-2">Уровень 1 · Все</div>
+                <p class="text-white/50 text-xs leading-relaxed">Пользуются готовыми агентами как чатом: дал вход по инструкции → получил 300 креативов → проверил → передал дальше. Ручная проверка человеком остаётся.</p>
+            </div>
+            <div class="card-bg rounded-2xl p-6">
+                <div class="text-2xl mb-3">🔧</div>
+                <div class="text-sm font-bold text-white mb-2">Уровень 2 · Любой в команде</div>
+                <p class="text-white/50 text-xs leading-relaxed">Может создать себе базового агента: «помни это и это» — процессные правила, которые переживают схлопывание контекста чата. Полдня — разобраться со скилами (это разметка, не код).</p>
+            </div>
+            <div class="card-bg rounded-2xl p-6">
+                <div class="text-2xl mb-3">🏗️</div>
+                <div class="text-sm font-bold text-white mb-2">Уровень 3 · Разработчик + визионер</div>
+                <p class="text-white/50 text-xs leading-relaxed">Строительство агентных систем (всё, что в этом уроке) — с техническим человеком. Визию, комьюнити и новые методы приносит собственник.</p>
+            </div>
+        </div>
+
+        <div class="card-bg rounded-2xl p-6">
+            <p class="text-sm text-white/55 leading-relaxed">
+                💡 <strong class="text-white">Кого нанимать e-commerce-бизнесу:</strong> не разработчика, а
+                эксперта по контенту, который умеет работать с 10 агентами (контент для сайта, соцсетей,
+                A/B-тестов, рекламы). Он даст больше, чем программист. Для 5–10% технических задач достаточно
+                человека на подхвате с апворка. Специалист, который делает работу пяти — стоит в пять раз дороже.
+            </p>
+        </div>
+    </section>
+
+    <!-- ── HOMEWORK ── -->
+    <section class="mb-16">
+        <h2 class="text-xl font-bold mb-1 section-title">Домашнее задание</h2>
+        <p class="text-white/35 text-sm mb-8 mt-3">К следующему уроку</p>
+
+        <div class="hw-style rounded-2xl p-8">
+            <div class="flex items-center gap-3 mb-7">
+                <span class="text-xl">📋</span>
+                <h3 class="text-base font-bold text-green-300">Задание к Уроку 3</h3>
+            </div>
+
+            <div class="space-y-5">
+
+                <div class="flex gap-3 items-start">
+                    <div class="w-7 h-7 rounded-full bg-green-500/20 border border-green-500/40 flex items-center justify-center flex-shrink-0">
+                        <span class="text-xs text-green-400 font-black">1</span>
+                    </div>
+                    <div>
+                        <p class="text-white font-semibold text-sm">Описать один SOP визионерски — через стейты</p>
+                        <p class="text-white/45 text-xs mt-1.5 leading-relaxed">Выбери процесс не самый простой, но и не самый сложный — тот, что даст эффект (в идеале масштабируемый через AI, как SEO). Разбей на ~5 ключевых этапов. Для каждого: что на входе → что на выходе (ценный конечный продукт этапа). НЕ мельчить до «нажми кнопку» — думай «какие 5 идеальных экспертов это делали бы».</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 items-start">
+                    <div class="w-7 h-7 rounded-full bg-green-500/20 border border-green-500/40 flex items-center justify-center flex-shrink-0">
+                        <span class="text-xs text-green-400 font-black">2</span>
+                    </div>
+                    <div>
+                        <p class="text-white font-semibold text-sm">Зафиксировать SOP: текст, аудио или видео</p>
+                        <p class="text-white/45 text-xs mt-1.5 leading-relaxed">Можно надиктовать голосом (по минуте, с паузами и проверкой «всё получил?») или записать видео с демонстрацией экрана. Но если процесс требует 15 минут видео со скринами — это признак джуновского SOP, поднимай уровень абстракции.</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 items-start">
+                    <div class="w-7 h-7 rounded-full bg-green-500/20 border border-green-500/40 flex items-center justify-center flex-shrink-0">
+                        <span class="text-xs text-green-400 font-black">3</span>
+                    </div>
+                    <div>
+                        <p class="text-white font-semibold text-sm">Собрать данные: свои + лучшие с рынка</p>
+                        <p class="text-white/45 text-xs mt-1.5 leading-relaxed">Свои: PDF, таблицы, записи — что показывает «как правильно». Рыночные: вспомни, кто в твоей нише самый крутой эксперт — его блоги, статьи, сайты, посты. Рыночная информация пойдёт первым слоем знаний агента.</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 items-start">
+                    <div class="w-7 h-7 rounded-full bg-green-500/20 border border-green-500/40 flex items-center justify-center flex-shrink-0">
+                        <span class="text-xs text-green-400 font-black">4</span>
+                    </div>
+                    <div>
+                        <p class="text-white font-semibold text-sm">Взять подписку Genspark по ссылке Ника</p>
+                        <p class="text-white/45 text-xs mt-1.5 leading-relaxed">Там будут выданы агенты-хелперы: конвертер SOP → экспертный формат и скаут готовых скилов. Недорого на старте (~$20–100/мес в зависимости от объёма), внутри — лучшие модели миксом.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="mt-7 pt-5 border-t border-green-500/20 flex items-center gap-2">
+                <span class="text-green-400 text-xs">⏰</span>
+                <p class="text-xs text-green-400/60">На следующем уроке — переход к техническим вещам: облако, внедрение готовых скилов, примеры живых агентов</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── NEXT LESSONS ── -->
+    <section class="mb-8">
+        <h2 class="text-xl font-bold mb-1 section-title">Что впереди</h2>
+        <p class="text-white/35 text-sm mb-8 mt-3">Программа курса на 8 недель</p>
+
+        <div class="grid md:grid-cols-2 gap-3">
+            <div class="card-bg rounded-xl p-4" style="opacity:0.45">
+                <div class="text-xs text-indigo-400 font-semibold mb-1.5">Урок 3</div>
+                <p class="text-sm text-white/65">Технические шаги: аренда облака (Nebius), разбор SOP участников через агентов-хелперов, внедрение готовых скилов, примеры рабочих агентов (реклама, мерчандайзинг, мониторинг конкурентов).</p>
+            </div>
+            <div class="card-bg rounded-xl p-4" style="opacity:0.45">
+                <div class="text-xs text-indigo-400 font-semibold mb-1.5">Уроки 4–6</div>
+                <p class="text-sm text-white/65">Harness-системы глубже, мультиагентные архитектуры, RAG, управление данными, аналитика рекламы (D2C / Shopify / TikTok).</p>
+            </div>
+            <div class="card-bg rounded-xl p-4" style="opacity:0.45">
+                <div class="text-xs text-indigo-400 font-semibold mb-1.5">Урок 7</div>
+                <p class="text-sm text-white/65">Оценка и самоулучшение системы: evaluation-циклы, трейсинг в проде, работа с фидбэком.</p>
+            </div>
+            <div class="card-bg rounded-xl p-4" style="opacity:0.45">
+                <div class="text-xs text-indigo-400 font-semibold mb-1.5">Финал — Урок 8</div>
+                <p class="text-sm text-white/65">Полноценная агентная система, покрывающая 95% одного отдела компании. Настройка инфраструктуры.</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- ─── FOOTER ──────────────────────────────────────────────────────────── -->
+<footer class="border-t border-white/08 mt-4">
+    <div class="max-w-5xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-3">
+            <div class="badge-purple w-8 h-8 rounded-xl flex items-center justify-center text-xs font-extrabold">AI</div>
+            <div>
+                <div class="text-sm font-bold text-white">Школа AI-агентов</div>
+                <div class="text-xs text-white/35">Ник Сынов · Standard Matter</div>
+            </div>
+        </div>
+        <div class="text-xs text-white/25">Протокол создан AI-агентом · 22 июля 2026</div>
+    </div>
+</footer>
+
+</body>
+</html>
