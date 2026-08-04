@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок 3 · Данные для агентов | Школа AI-агентов | Ник Сынов</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #080b14; }
+
+        .hero-bg {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 60%, #24243e 100%);
+        }
+        .card-bg {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: border-color 0.2s;
+        }
+        .card-bg:hover { border-color: rgba(99,102,241,0.35); }
+        .quote-style {
+            background: linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(139,92,246,0.12) 100%);
+            border-left: 4px solid #818cf8;
+        }
+        .hw-style {
+            background: linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(5,150,105,0.08) 100%);
+            border: 1px solid rgba(16,185,129,0.25);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #818cf8 0%, #a78bfa 50%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .badge-purple { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); }
+        .badge-green  { background: rgba(16,185,129,0.2);  color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+        .badge-red    { background: rgba(239,68,68,0.15);   color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+        .badge-blue   { background: rgba(59,130,246,0.15);  color: #93c5fd; border: 1px solid rgba(59,130,246,0.25); }
+        .badge-yellow { background: rgba(234,179,8,0.15);   color: #fde047; border: 1px solid rgba(234,179,8,0.25); }
+
+        .section-title::after {
+            content: ''; display: block;
+            width: 48px; height: 3px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            margin-top: 8px; border-radius: 99px;
+        }
+        .number-badge {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            width: 30px; height: 30px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 13px; flex-shrink: 0;
+        }
+        @keyframes pulse-glow {
+            0%,100% { box-shadow: 0 0 18px rgba(99,102,241,0.25); }
+            50%      { box-shadow: 0 0 36px rgba(139,92,246,0.45); }
+        }
+        .animate-glow { animation: pulse-glow 3.5s ease-in-out infinite; }
+
+        .tab-btn {
+            padding: 8px 18px; border-radius: 10px;
+            font-size: 13px; font-weight: 600;
+            transition: all 0.2s; cursor: pointer;
+            border: 1px solid transparent;
+            display: inline-block; text-decoration: none;
+        }
+        .tab-active { background: linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; }
+        .tab-link {
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.65);
+            border-color: rgba(255,255,255,0.10);
+        }
+        .tab-link:hover { border-color: rgba(99,102,241,0.5); color: #fff; }
+        .tab-inactive {
+            background: rgba(255,255,255,0.04);
+            color: rgba(255,255,255,0.25);
+            border-color: rgba(255,255,255,0.08);
+            cursor: not-allowed;
+        }
+
+        /* scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #0d1018; }
+        ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 99px; }
+    </style>
+</head>
+<body class="text-white min-h-screen">
+
+<!-- ─── HEADER ─────────────────────────────────────────────────────────── -->
+<header class="hero-bg border-b border-white/10">
+    <div class="max-w-5xl mx-auto px-6 py-10">
+
+        <!-- brand -->
+        <div class="flex items-center gap-3 mb-7">
+            <div class="badge-purple w-8 h-8 rounded-xl flex items-center justify-center text-xs font-extrabold">AI</div>
+            <span class="text-white/50 text-xs font-semibold tracking-widest uppercase">Школа AI-агентов · Ник Сынов</span>
+        </div>
+
+        <!-- tabs -->
+        <div class="flex gap-2 flex-wrap mb-10">
+            <a href="index.html" class="tab-btn tab-link">Урок 1 · Основы</a>
+            <a href="lesson2.html" class="tab-btn tab-link">Урок 2 · Agent Core</a>
+            <span class="tab-btn tab-active">Урок 3 · Данные</span>
+            <span class="tab-btn tab-inactive">Урок 4 · скоро</span>
+            <span class="tab-btn tab-inactive">Урок 5–8 · скоро</span>
+        </div>
+
+        <!-- hero -->
+        <div class="flex items-start gap-5">
+            <div class="animate-glow card-bg rounded-2xl px-5 py-4 flex-shrink-0">
+                <div class="text-5xl font-black text-white/15 leading-none">03</div>
+            </div>
+            <div>
+                <div class="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-2">Урок 3 · Данные для агентов · 17 июля 2026</div>
+                <h1 class="text-3xl md:text-4xl font-black leading-tight mb-3">
+                    Данные как топливо:<br>
+                    <span class="gradient-text">SOP, RAG, OAK<br>и система 300 спартанцев</span>
+                </h1>
+                <p class="text-white/45 text-sm leading-relaxed max-w-xl mb-4">
+                    Почему агент без правильных данных работает вслепую — и как за три шага
+                    собрать базу знаний, которая превращает модель в эксперта вашей ниши:
+                    форматы данных, разметка, RAG, система оценки рекламных креативов и
+                    правильный порядок автоматизации.
+                </p>
+                <a href="https://www.youtube.com/watch?v=3-m9VXMwt1k" target="_blank" rel="noopener"
+                   class="inline-flex items-center gap-2 bg-red-500/15 border border-red-500/30 hover:border-red-400/60 transition-colors rounded-xl px-4 py-2 text-xs font-bold text-red-300">
+                    ▶ Смотреть запись урока · 1 ч 31 мин
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ─── MAIN ───────────────────────────────────────────────────────────── -->
+<main class="max-w-5xl mx-auto px-6 py-14">
+
+    <!-- Stats row -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+        <div class="card-bg rounded-2xl p-5 text-center">
+            <div class="text-2xl font-black text-indigo-400 mb-1">~91 мин</div>
+            <div class="text-xs text-white/35">Длительность</div>
+        </div>
+        <div class="card-bg rounded-2xl p-5 text-center">
+            <div class="text-2xl font-black text-indigo-400 mb-1">3 формата</div>
+            <div class="text-xs text-white/35">SOP · RAG · OAK</div>
+        </div>
+        <div class="card-bg rounded-2xl p-5 text-center">
+            <div class="text-2xl font-black text-yellow-400 mb-1">300</div>
+            <div class="text-xs text-white/35">Спартанцев: система оценки</div>
+        </div>
+        <div class="card-bg rounded-2xl p-5 text-center">
+            <div class="text-2xl font-black text-indigo-400 mb-1">4 принципа</div>
+            <div class="text-xs text-white/35">Построения агентных систем</div>
+        </div>
+    </div>
+
+    <!-- ── KEY INSIGHTS ── -->
+    <section class="mb-16">
+        <h2 class="text-xl font-bold mb-1 section-title">Ключевые инсайты</h2>
+        <p class="text-white/35 text-sm mb-8 mt-3">Самое важное из урока — одной строкой</p>
+
+        <div class="grid md:grid-cols-2 gap-4">
+
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex gap-3 items-start">
+                    <span class="text-2xl">⛽</span>
+                    <div>
+                        <div class="text-xs font-bold text-indigo-400 uppercase mb-2">Главное правило</div>
+                        <p class="text-white font-semibold text-sm leading-relaxed">Агент без данных — это лучший эксперт в мире, которому не дали ни одного документа о вашем бизнесе. Данные первичны, агент вторичен.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex gap-3 items-start">
+                    <span class="text-2xl">🤖</span>
+                    <div>
+                        <div class="text-xs font-bold text-yellow-400 uppercase mb-2">Агент vs Автоматизация</div>
+                        <p class="text-white font-semibold text-sm leading-relaxed">Автоматизация исполняет алгоритм. Агент думает и принимает решения. Разница не в технологии — в наличии reasoning и адаптации к новым данным.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex gap-3 items-start">
+                    <span class="text-2xl">📂</span>
+                    <div>
+                        <div class="text-xs font-bold text-blue-400 uppercase mb-2">Три формата данных</div>
+                        <p class="text-white font-semibold text-sm leading-relaxed">SOP — процесс. RAG — база знаний. OAK — накопленный опыт агента. Без разбора, что куда класть, агент смешивает всё в кучу и галлюцинирует.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex gap-3 items-start">
+                    <span class="text-2xl">🏆</span>
+                    <div>
+                        <div class="text-xs font-bold text-purple-400 uppercase mb-2">300 спартанцев</div>
+                        <p class="text-white font-semibold text-sm leading-relaxed">Система оценки рекламных креативов: 300 критериев, каждый — бинарно. Агент набирает скор и сам знает, что публиковать, а что переделывать.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex gap-3 items-start">
+                    <span class="text-2xl">🔄</span>
+                    <div>
+                        <div class="text-xs font-bold text-green-400 uppercase mb-2">Самоэволюция</div>
+                        <p class="text-white font-semibold text-sm leading-relaxed">Reward Process — агент сам помечает, что сработало, а что нет. Это фундамент самообучения. Без этого механизма система не растёт, а просто повторяет ошибки.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex gap-3 items-start">
+                    <span class="text-2xl">🗺️</span>
+                    <div>
+                        <div class="text-xs font-bold text-orange-400 uppercase mb-2">С чего начинать</div>
+                        <p class="text-white font-semibold text-sm leading-relaxed">Порядок внедрения: SEO и контент → реклама → аналитика → генерация контента. Не с рекламы — хотя туда тянет. Начни там, где данных больше всего.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ── QUOTES ── -->
+    <section class="mb-16">
+        <h2 class="text-xl font-bold mb-1 section-title">Цитаты урока</h2>
+        <p class="text-white/35 text-sm mb-8 mt-3">Слова, которые стоит запомнить</p>
+
+        <div class="space-y-4">
+
+            <div class="quote-style rounded-2xl p-6">
+                <p class="text-base md:text-lg font-semibold text-white/90 leading-relaxed mb-3">
+                    «Агент — это не автоматизация. Автоматизация делает то, что вы сказали. Агент делает то, что нужно — даже если вы не предусмотрели этот сценарий»
+                </p>
+                <div class="text-xs text-indigo-300 font-medium">— о фундаментальной разнице между агентом и скриптом</div>
+            </div>
+
+            <div class="quote-style rounded-2xl p-6">
+                <p class="text-base md:text-lg font-semibold text-white/90 leading-relaxed mb-3">
+                    «Вы можете взять лучшую модель в мире и она будет работать плохо, если у неё нет правильных данных. И наоборот — средняя модель с правильными данными обыгрывает GPT без них»
+                </p>
+                <div class="text-xs text-indigo-300 font-medium">— о данных как главном конкурентном преимуществе</div>
+            </div>
+
+            <div class="quote-style rounded-2xl p-6">
+                <p class="text-base md:text-lg font-semibold text-white/90 leading-relaxed mb-3">
+                    «RAG — это не просто "загрузи PDF". Это структурированное хранилище ответов на вопросы, которые ваш агент будет задавать себе в процессе работы»
+                </p>
+                <div class="text-xs text-indigo-300 font-medium">— о правильном понимании базы знаний</div>
+            </div>
+
+            <div class="quote-style rounded-2xl p-6">
+                <p class="text-base md:text-lg font-semibold text-white/90 leading-relaxed mb-3">
+                    «Все хотят начать с рекламы — там деньги. Но реклама без данных из контента и SEO — это стрельба вслепую. Начни с того, где уже накоплены результаты»
+                </p>
+                <div class="text-xs text-indigo-300 font-medium">— о правильном порядке внедрения автоматизации</div>
+            </div>
+
+            <div class="quote-style rounded-2xl p-6">
+                <p class="text-base md:text-lg font-semibold text-white/90 leading-relaxed mb-3">
+                    «300 спартанцев — это ваш стандарт качества, оцифрованный. Когда агент знает все 300 критериев наизусть, он никогда не выдаст вам откровенно плохой креатив»
+                </p>
+                <div class="text-xs text-indigo-300 font-medium">— о системе оценки рекламных материалов</div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ── CONCEPTS ── -->
+    <section class="mb-16">
+        <h2 class="text-xl font-bold mb-1 section-title">Разбор концепций</h2>
+        <p class="text-white/35 text-sm mb-8 mt-3">Что обсуждалось на уроке</p>
+
+        <div class="space-y-5">
+
+            <!-- 1 -->
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="number-badge text-white mt-0.5">1</div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-white mb-2">Агент vs Автоматизация — чем отличается на практике</h3>
+                        <p class="text-white/55 text-sm leading-relaxed mb-3">
+                            Автоматизация — детерминированная цепочка: «если А → делай Б». Она не думает, не адаптируется,
+                            не принимает решений в нестандартных ситуациях. <strong class="text-indigo-300">Агент</strong> —
+                            система с reasoning: получает контекст, анализирует, выбирает из вариантов и
+                            <strong class="text-indigo-300">учится на результатах</strong>. Ключевой признак агента —
+                            он может столкнуться с ситуацией, которую вы не предусмотрели, и всё равно принять правильное решение.
+                            На практике: автоматизация подходит для чётких повторяемых операций (выгрузка данных, отправка уведомлений),
+                            агент — для задач с вариативностью (оценка материала, написание контента, принятие решений).
+                        </p>
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-semibold badge-red">❌ Автоматизация: нет адаптации</span>
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-semibold badge-red">❌ Автоматизация: нет reasoning</span>
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-semibold badge-green">✅ Агент: думает</span>
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-semibold badge-green">✅ Агент: учится</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2 -->
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="number-badge text-white mt-0.5">2</div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-white mb-2">4 принципа построения агентных систем</h3>
+                        <p class="text-white/55 text-sm leading-relaxed mb-3">
+                            Ник формулирует четыре фундаментальных принципа, без которых система не работает на дистанции.
+                            <strong class="text-indigo-300">1. Декомпозиция стейтов</strong> — каждый этап SOP становится
+                            отдельным состоянием с чётким входом и выходом (разобрано в уроке 2).
+                            <strong class="text-indigo-300">2. A/B тестирование промтов</strong> — математический подбор через DSPY,
+                            никогда не работать с одним вариантом.
+                            <strong class="text-indigo-300">3. Self-evolution / Reward Process</strong> — агент должен помечать
+                            успешные и неуспешные действия для самообучения.
+                            <strong class="text-indigo-300">4. Минимизация галлюцинаций</strong> — трейсинг до уровня экшена,
+                            guardrails на критических точках.
+                        </p>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3 text-center">
+                                <div class="text-sm font-bold text-indigo-300 mb-1">🔀</div>
+                                <div class="text-xs font-semibold text-white/70">Декомпозиция стейтов</div>
+                            </div>
+                            <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3 text-center">
+                                <div class="text-sm font-bold text-indigo-300 mb-1">🧪</div>
+                                <div class="text-xs font-semibold text-white/70">A/B промтов</div>
+                            </div>
+                            <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3 text-center">
+                                <div class="text-sm font-bold text-indigo-300 mb-1">🔄</div>
+                                <div class="text-xs font-semibold text-white/70">Самоэволюция</div>
+                            </div>
+                            <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3 text-center">
+                                <div class="text-sm font-bold text-indigo-300 mb-1">🛡️</div>
+                                <div class="text-xs font-semibold text-white/70">Антигаллюцинации</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3 -->
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="number-badge text-white mt-0.5">3</div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-white mb-2">Три формата данных: SOP, RAG и OAK</h3>
+                        <p class="text-white/55 text-sm leading-relaxed mb-3">
+                            Распространённая ошибка — смешивать всё в один большой документ и «скормить» агенту.
+                            Правильная архитектура данных разделяет три слоя.
+                            <strong class="text-indigo-300">SOP</strong> — процессные данные: как агент должен работать,
+                            стейты, алгоритм принятия решений. Это «должностная инструкция».
+                            <strong class="text-indigo-300">RAG</strong> — база знаний: лучшие материалы рынка,
+                            ваши внутренние знания, экспертные источники. Это «библиотека».
+                            <strong class="text-indigo-300">OAK (Operational Agent Knowledge)</strong> — накопленный опыт:
+                            что сработало, что не сработало, результаты прошлых задач. Это «память».
+                            Каждый слой хранится отдельно, агент обращается к нужному по контексту задачи.
+                        </p>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3 text-center">
+                                <div class="text-sm font-bold text-indigo-300 mb-1">📋</div>
+                                <div class="text-xs font-semibold text-white/70">SOP</div>
+                                <div class="text-xs text-white/35 mt-0.5">Как работать</div>
+                            </div>
+                            <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3 text-center">
+                                <div class="text-sm font-bold text-indigo-300 mb-1">📚</div>
+                                <div class="text-xs font-semibold text-white/70">RAG</div>
+                                <div class="text-xs text-white/35 mt-0.5">Что знать</div>
+                            </div>
+                            <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3 text-center">
+                                <div class="text-sm font-bold text-indigo-300 mb-1">🗄️</div>
+                                <div class="text-xs font-semibold text-white/70">OAK</div>
+                                <div class="text-xs text-white/35 mt-0.5">Что помнить</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4 -->
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="number-badge text-white mt-0.5">4</div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-white mb-2">Разметка данных — как учить агента на своих примерах</h3>
+                        <p class="text-white/55 text-sm leading-relaxed mb-3">
+                            Разметка — это не технический процесс, это экспертный. Ваша задача: взять 20–50 примеров
+                            «правильного» результата и явно зафиксировать, <strong class="text-indigo-300">почему он правильный</strong>.
+                            Не просто «вот хороший пост» — а «вот хороший пост, потому что: конкретный заголовок, цифра в первом предложении,
+                            CTA без воды». Такая разметка становится обучающими данными: агент понимает паттерн, а не просто копирует.
+                            Правило: если вы не можете объяснить, почему пример хороший, агент тоже не поймёт.
+                            Минимальный стартовый датасет — 20 размеченных примеров на один тип задачи.
+                        </p>
+                        <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3">
+                            <p class="text-xs text-indigo-300">💡 Формула разметки: результат + критерии оценки + контекст, при котором это сработало. Без контекста агент будет применять паттерн в неподходящих ситуациях.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5 -->
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="number-badge text-white mt-0.5">5</div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-white mb-2">Система «300 спартанцев» — оценка рекламных креативов</h3>
+                        <p class="text-white/55 text-sm leading-relaxed mb-3">
+                            Один из практических примеров из бизнеса Ника: система оценки рекламных материалов,
+                            которая работает как чеклист из 300 бинарных критериев.
+                            Каждый критерий — либо выполнен (1), либо нет (0).
+                            Итоговый скор определяет, идёт ли материал в публикацию, на доработку или в отказ.
+                            <strong class="text-indigo-300">Почему 300, а не 10?</strong> Потому что в рекламе детали решают:
+                            правильный хук в первые 3 секунды, отсутствие стоковых изображений, конкретность оффера —
+                            каждый пункт влияет на конверсию. Агент проходит по чеклисту и выдаёт не «хороший/плохой»,
+                            а конкретный список что исправить. Человек в этой системе — только на финальном одобрении.
+                        </p>
+                        <div class="bg-purple-500/10 border border-purple-500/20 rounded-xl p-3">
+                            <p class="text-xs text-purple-300">⚠️ Главное в системе оценки — не количество критериев, а их конкретность. «Текст читабелен» — плохой критерий. «Шрифт не меньше 16px на мобильном, контраст 4.5:1» — рабочий критерий.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6 -->
+            <div class="card-bg rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="number-badge text-white mt-0.5">6</div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-white mb-2">Правильный порядок внедрения: от данных к автоматизации</h3>
+                        <p class="text-white/55 text-sm leading-relaxed mb-3">
+                            Ник даёт чёткий порядок, который снижает риск провала на старте.
+                            <strong class="text-indigo-300">Этап 1 — SEO и контент:</strong> здесь уже есть данные (что индексируется,
+                            что получает трафик, что конвертит). Агент быстро видит паттерны и начинает работать.
+                            <strong class="text-indigo-300">Этап 2 — Реклама:</strong> когда есть база контента, агент умеет
+                            адаптировать его под объявления. Без этапа 1 — реклама с нуля, высокий риск слива.
+                            <strong class="text-indigo-300">Этап 3 — Аналитика:</strong> агент связывает контент, рекламу
+                            и результаты в единую картину.
+                            <strong class="text-indigo-300">Этап 4 — Генерация контента:</strong> масштабирование того,
+                            что уже доказало эффективность. Именно в таком порядке, не наоборот.
+                        </p>
+                        <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3">
+                            <p class="text-xs text-blue-300">💡 Частая ошибка: начинать с генерации контента. Агент генерирует много, но без данных о том, что работает — масштабирует пустоту. Всегда данные → аналитика → затем масштаб.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ── ARCHITECTURE ── -->
+    <section class="mb-16">
+        <h2 class="text-xl font-bold mb-1 section-title">Архитектура Гермеса: детали</h2>
+        <p class="text-white/35 text-sm mb-8 mt-3">Как устроена обвязка изнутри</p>
+
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
+            <div class="card-bg rounded-2xl p-6">
+                <div class="text-2xl mb-3">🧠</div>
+                <div class="text-sm font-bold text-white mb-2">Soul-файл</div>
+                <p class="text-white/50 text-xs leading-relaxed">«Психология» агента — его личность под конкретный тип задач. Для креатива — один soul, для аналитики — другой. Без soul-файла агент отвечает как «ассистент», а не как эксперт.</p>
+            </div>
+            <div class="card-bg rounded-2xl p-6">
+                <div class="text-2xl mb-3">⚡</div>
+                <div class="text-sm font-bold text-white mb-2">Reward Process</div>
+                <p class="text-white/50 text-xs leading-relaxed">Механизм самооценки: после каждого действия агент помечает результат как успешный или нет. Этот сигнал используется для автоматической корректировки промтов через DSPY.</p>
+            </div>
+            <div class="card-bg rounded-2xl p-6">
+                <div class="text-2xl mb-3">🔗</div>
+                <div class="text-sm font-bold text-white mb-2">Субагенты</div>
+                <p class="text-white/50 text-xs leading-relaxed">Гермес не делает всё сам — он делегирует субагентам. Каждый субагент специализирован. Главное правило: субагент не знает про других субагентов, он видит только свою задачу.</p>
+            </div>
+        </div>
+
+        <div class="card-bg rounded-2xl p-6">
+            <p class="text-sm text-white/55 leading-relaxed">
+                💡 <strong class="text-white">Как Гермес обрабатывает большие задачи:</strong> когда контекст задачи превышает
+                окно LLM, Гермес автоматически дробит её на части и раздаёт субагентам.
+                Каждый субагент работает со своим куском, Гермес собирает результаты.
+                Это позволяет обрабатывать документы и датасеты любого размера без ручного вмешательства.
+                Ключевое: вы проектируете логику, а не решаете технические ограничения.
+            </p>
+        </div>
+    </section>
+
+    <!-- ── HOMEWORK ── -->
+    <section class="mb-16">
+        <h2 class="text-xl font-bold mb-1 section-title">Домашнее задание</h2>
+        <p class="text-white/35 text-sm mb-8 mt-3">К следующему уроку</p>
+
+        <div class="hw-style rounded-2xl p-8">
+            <div class="flex items-center gap-3 mb-7">
+                <span class="text-xl">📋</span>
+                <h3 class="text-base font-bold text-green-300">Задание к Уроку 4</h3>
+            </div>
+
+            <div class="space-y-5">
+
+                <div class="flex gap-3 items-start">
+                    <div class="w-7 h-7 rounded-full bg-green-500/20 border border-green-500/40 flex items-center justify-center flex-shrink-0">
+                        <span class="text-xs text-green-400 font-black">1</span>
+                    </div>
+                    <div>
+                        <p class="text-white font-semibold text-sm">Подготовить структурированный пример данных для одного шага процесса</p>
+                        <p class="text-white/45 text-xs mt-1.5 leading-relaxed">Возьми один стейт из SOP (домашнее задание урока 2). Опиши его в формате: вход (что именно приходит на вход), процесс (какие решения принимаются), выход (что конкретно должно получиться). Добавь 3–5 реальных примеров из своей практики с разметкой «почему это хороший результат».</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 items-start">
+                    <div class="w-7 h-7 rounded-full bg-green-500/20 border border-green-500/40 flex items-center justify-center flex-shrink-0">
+                        <span class="text-xs text-green-400 font-black">2</span>
+                    </div>
+                    <div>
+                        <p class="text-white font-semibold text-sm">Собрать первый слой RAG-базы знаний</p>
+                        <p class="text-white/45 text-xs mt-1.5 leading-relaxed">Найди 5–10 лучших внешних источников по своей нише (статьи, гайды, кейсы конкурентов, данные рынка). Отдельно — 3–5 своих внутренних документов: результаты кампаний, успешные скрипты, фреймворки. Оба слоя сохрани в отдельные папки — это будет RAG-база первого дня.</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 items-start">
+                    <div class="w-7 h-7 rounded-full bg-green-500/20 border border-green-500/40 flex items-center justify-center flex-shrink-0">
+                        <span class="text-xs text-green-400 font-black">3</span>
+                    </div>
+                    <div>
+                        <p class="text-white font-semibold text-sm">Определить приоритетный процесс для внедрения агента</p>
+                        <p class="text-white/45 text-xs mt-1.5 leading-relaxed">Используя порядок из урока (SEO/контент → реклама → аналитика → генерация): какой процесс у тебя сейчас наиболее зрелый с точки зрения данных? Где уже есть результаты, которые можно использовать как обучающие данные? Это и есть точка старта — зафиксируй её.</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 items-start">
+                    <div class="w-7 h-7 rounded-full bg-green-500/20 border border-green-500/40 flex items-center justify-center flex-shrink-0">
+                        <span class="text-xs text-green-400 font-black">4</span>
+                    </div>
+                    <div>
+                        <p class="text-white font-semibold text-sm">Набросать систему оценки для своего типа контента</p>
+                        <p class="text-white/45 text-xs mt-1.5 leading-relaxed">По аналогии с «300 спартанцами» — составь 10–20 конкретных бинарных критериев для оценки главного типа контента в твоём бизнесе (рекламный пост, карточка товара, письмо, лендинг). Не «хороший текст», а «заголовок содержит цифру или конкретный результат».</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="mt-7 pt-5 border-t border-green-500/20 flex items-center gap-2">
+                <span class="text-green-400 text-xs">⏰</span>
+                <p class="text-xs text-green-400/60">На следующем уроке — технические шаги: настройка облака Nebius, разбор SOP участников через агентов-хелперов, запуск первых рабочих агентов</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── NEXT LESSONS ── -->
+    <section class="mb-8">
+        <h2 class="text-xl font-bold mb-1 section-title">Что впереди</h2>
+        <p class="text-white/35 text-sm mb-8 mt-3">Программа курса на 8 недель</p>
+
+        <div class="grid md:grid-cols-2 gap-3">
+            <div class="card-bg rounded-xl p-4" style="opacity:0.45">
+                <div class="text-xs text-indigo-400 font-semibold mb-1.5">Урок 4</div>
+                <p class="text-sm text-white/65">Технические шаги: аренда облака (Nebius), разбор SOP участников через агентов-хелперов, внедрение готовых скилов, примеры рабочих агентов (реклама, мерчандайзинг, мониторинг конкурентов).</p>
+            </div>
+            <div class="card-bg rounded-xl p-4" style="opacity:0.45">
+                <div class="text-xs text-indigo-400 font-semibold mb-1.5">Уроки 5–6</div>
+                <p class="text-sm text-white/65">Harness-системы глубже, мультиагентные архитектуры, RAG, управление данными, аналитика рекламы (D2C / Shopify / TikTok).</p>
+            </div>
+            <div class="card-bg rounded-xl p-4" style="opacity:0.45">
+                <div class="text-xs text-indigo-400 font-semibold mb-1.5">Урок 7</div>
+                <p class="text-sm text-white/65">Оценка и самоулучшение системы: evaluation-циклы, трейсинг в проде, работа с фидбэком.</p>
+            </div>
+            <div class="card-bg rounded-xl p-4" style="opacity:0.45">
+                <div class="text-xs text-indigo-400 font-semibold mb-1.5">Финал — Урок 8</div>
+                <p class="text-sm text-white/65">Полноценная агентная система, покрывающая 95% одного отдела компании. Настройка инфраструктуры.</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- ─── FOOTER ──────────────────────────────────────────────────────────── -->
+<footer class="border-t border-white/08 mt-4">
+    <div class="max-w-5xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-3">
+            <div class="badge-purple w-8 h-8 rounded-xl flex items-center justify-center text-xs font-extrabold">AI</div>
+            <div>
+                <div class="text-sm font-bold text-white">Школа AI-агентов</div>
+                <div class="text-xs text-white/35">Ник Сынов · Standard Matter</div>
+            </div>
+        </div>
+        <div class="text-xs text-white/25">Протокол создан AI-агентом · 4 августа 2026</div>
+    </div>
+</footer>
+
+</body>
+</html>
